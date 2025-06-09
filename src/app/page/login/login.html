@@ -1,0 +1,13 @@
+<div class="login">
+    <form [formGroup]="formGroup">
+        <div class="formcontrol">
+            <label for="username">User Name : </label>
+            <input type="text" autocomplete="off" id="username" formControlName="username" >
+        </div>
+        <div class="formcontrol">
+            <label for="password">Password : </label>
+            <input type="text" autocomplete="off" id="password" formControlName="password">
+        </div>
+        <button type="button" (click)="onClick()" >Click</button>
+    </form>
+</div>

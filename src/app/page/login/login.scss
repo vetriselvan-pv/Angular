@@ -1,0 +1,14 @@
+form {
+    display : flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.formcontrol {
+    display : flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+input {
+     width : 350px;   
+}
