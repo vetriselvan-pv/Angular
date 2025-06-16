@@ -1,0 +1,228 @@
+control Flow in Angular 20 . 
+
+Hey developers , 
+    Angular 20 got released and yeah our favourite *ngFor , *ngIf and [ngSwitch] will be no more ( yes it got deprecated ) . Instead angular brought up the control flow 
+    Let discuss deeply. 
+
+What is control flow ? 
+    Angular templates support control flow blocks that let you conditionally show, hide, and repeat elements.
+    Conditional display of context 
+    @if , @else-if , @else @switch block 
+
+    Repeat your content using 
+    @for block
+
+Study 1 : 
+ @if , @else if and @else 
+
+    you want to conditionaly rendering the template . here is the block for that . 
+    @if , @else-if and @else: 
+
+        The @if block conditionally displays its content when its condition expression is truthy.simialr to javascript you can handle your logic inside the () ;
+
+        Example : 
+
+        <div class="login-wrapper">
+        @if (loggedInRole() === 'ADMIN') {
+            <span>
+                User logged in have ADMIN access
+            </span>
+        }
+        @else if (loggedInRole() === 'DEVELOPER') {
+            <span>
+                User logged in have DEVELOPER access
+            </span>
+        }@else {
+            <span>
+                User logged doesn't have any access
+            </span>
+        }
+        </div>
+
+
+        <button type="button" (click)="userChange('ADMIN')" > Admin user </button>
+        <button type="button" (click)="userChange('DEVELOPER' )" > Developer user </button>
+            
+        import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-header',
+  imports: [],
+  templateUrl: './header.html',
+  styleUrl: './header.scss'
+})
+export class Header {
+
+  loggedInRole  = signal<'ADMIN' | 'DEVELOPER' | 'None' >('None')
+
+  userChange(role:'ADMIN' | 'DEVELOPER' | 'None'){
+    this.loggedInRole.set(role)
+  }
+}
+
+Note : 
+Base on the evaluation of conditional expressions, content will be added and removed from DOM. 
+
+The built-in @if supports referencing of expression results to keep a solution for common coding patterns: 
+
+Example : 
+html
+     <div class="country-list">
+     @if(country$ | async ; as countryList){
+        <span>{{countryList.length}}</span>
+    }
+</div>  
+
+In the ts file : 
+
+    country$ = this.http.get<any>(this.URL).pipe(
+        takeUntil(this._destroy$),
+        map((res: any) => res)
+      );
+
+Note : 
+    async pipe is a inbuild pipe in angular which perform subcriping the observable . 
+
+
+    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************
+Hey developers! 👋
+
+Big news in the Angular world: **Angular 20** is here — and it’s bringing a significant change to how we write templates.
+
+> Yes, our old structural directive `*ngIf`, `*ngFor`, and `[ngSwitch]` are now **deprecated**.
+> But don’t worry — Angular 20 introduces something better: **Control Flow Blocks**.
+
+Let’s explore this exciting update in this multi-part series, starting with the basics of conditional rendering using the new syntax.
+
+
+## 💡 What Are Control Flow Blocks?
+
+Control flow in Angular templates allows you to conditionally **show**, **hide**, and **repeat** elements — but now using a **cleaner, more expressive syntax**.
+
+### New Syntax Introduced:
+
+* `@if`, `@else if`, `@else` — Conditional logic (Replaces `*ngIf`)
+* `@for` — Loops (Replaces `*ngFor`)
+* `@switch` — Conditional logic (Replaces `[ngSwitch]`)
+
+In **Part 1**, we’ll focus on `@if`, `@else if`, and `@else`.
+
+## 🔧 Syntax
+
+```html
+@if (condition) { 
+    <!-- Template for case value1 -->
+  }
+@else if (condition) {
+    <!-- Template for case value2 -->
+  }
+@else {
+    <!-- Fallback template if no condition satisfied -->
+  }
+
+```
+
+## 🧪 Study 1: Conditional Rendering with `@if`, `@else-if`, `@else`
+
+Here’s a simple example — conditionally showing UI based on user roles.
+
+This example features two buttons that trigger updates to the loggedInRole variable. The template responds by rendering the appropriate content based on the current role.
+By default the loggedInRole will be `None` so it will render the else block.
+
+### 🌐 Template (HTML):
+
+```html
+<div class="login-wrapper">
+  @if (loggedInRole() === 'ADMIN') {
+    <span>User logged in has ADMIN access</span>
+  }
+  @else if (loggedInRole() === 'DEVELOPER') {
+    <span>User logged in has DEVELOPER access</span>
+  }
+  @else {
+    <span>User logged in doesn't have any access</span>
+  }
+</div>
+
+<button type="button" (click)="userChange('ADMIN')">Admin User</button>
+<button type="button" (click)="userChange('DEVELOPER')">Developer User</button>
+```
+
+### 📘 Component (TypeScript):
+
+```ts
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  templateUrl: './header.html',
+  styleUrls: ['./header.scss'],
+})
+export class Header {
+  loggedInRole = signal<'ADMIN' | 'DEVELOPER' | 'None'>('None');
+
+  userChange(role: 'ADMIN' | 'DEVELOPER' | 'None') {
+    this.loggedInRole.set(role);
+  }
+}
+```
+
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ogku2eq2zyupelu6f3zk.gif)
+
+
+## 🧠 Key Takeaways
+
+* `@if`, `@else if`, and `@else` provide a **clearer, block-level syntax** for conditional rendering.
+* Expressions are evaluated inside the `()` just like in JavaScript.
+* Angular's reactivity (via `signal`) makes it easy to track and update state.
+
+
+
+## 🔁 Bonus: Referencing Expression Results
+
+A great feature of the new `@if` block is the ability to **reference the result** of an expression.
+
+### ✅ Example:
+
+```html
+<div class="country-list">
+  @if (country$ | async; as countryList) {
+    <span>{{ countryList.length }}</span>
+  }
+</div>
+```
+
+### ✅ In the Component:
+
+```ts
+country$ = this.http.get<any>(this.URL).pipe(
+  takeUntil(this._destroy$),
+  map((res: any) => res)
+);
+```
+
+> 🔍 **Note:** The `async` pipe subscribes to the observable and automatically unsubscribes, keeping the code clean and efficient.
+
+
+
+## 📦 Conclusion (for Part 1)
+
+Angular 20’s control flow blocks bring us:
+
+* Simpler syntax
+* Better readability
+* Built-in reactivity with `signal`
+
+In [**Part 2**](https://dev.to/vetriselvan_11/angular-20-control-flow-part-2-for-is-the-new-ngfor-51am), we’ll explore `@for` and how to handle list rendering in a modern Angular way.
+ 
+Drop your thoughts below, and stay tuned for the next part!
+
+
+### ✍️ Author: [Vetriselvan](https://dev.to/vetriselvan_11)
+
+👨‍💻 Frontend Developer | Code Lover | Exploring Angular’s future
+
+
+*****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************    *****************************************

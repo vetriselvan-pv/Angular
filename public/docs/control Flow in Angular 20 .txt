@@ -1,0 +1,324 @@
+
+@switch 
+The @switch blocks displays content selected by one of the cases matching against the conditional expression. 
+
+
+    Angular switch block is inspired by the JavaScript switch statement:
+
+
+Syntax : 
+
+        @switch (condition) {
+        @case (caseA) {
+            Case A.
+        }
+        @case (caseB) {
+            Case B.
+        }
+        @default {
+            Default case.
+        }
+        }
+
+Example : 
+
+    <div class="status">
+  @switch (status()) {
+    @case ('Init') {
+      <span>Request Init</span>
+    }
+    @case ('Loading') {
+      <span>Request In progress</span>
+    }
+    @case ('Completed') {
+      <span>Request Completed</span>
+    }
+    @default {
+      <span> Status not available</span>
+    }
+  }
+</div>
+
+<div class="btn-container">
+<button type="button" (click)="requestChange('Init')">Init Request</button>
+
+<button type="button"(click)="requestChange('Loading')"> Request In Progress</button>
+
+<button type="button" (click)="requestChange('Completed')">Request Completed</button>
+</div>
+
+Here we are creating a simple html content based on the status the html content will be rended.  On load of the screen the status will be empty so it will render the default block. 
+Meanwhile we have 3 button in the screen Each button will update the status as Init, loading , and completed. 
+
+Note : 
+The value of the conditional expression is compared to the case expression using the === operator.
+@default block is not necessary all the time . You can omit if not required also. 
+@switch does not have fallthrough, so you do not need an equivalent to a break or return statement.
+
+
+********************************************************************************************
+
+
+
+
+
+
+Great! Here's **Part 3** of your Dev.to blog post on **Control Flow in Angular 20**, this time focusing on the new `@switch` block — the replacement for traditional multi-case rendering in templates.
+
+---
+
+# 🎛 Angular 20 Control Flow — Part 3: `@switch` Has Entered the Chat
+
+Welcome back Angular devs! 👋
+
+In [Part 1](#) and [Part 2](#), we explored the powerful `@if` and `@for` blocks in Angular 20’s shiny new control flow system.
+
+Now, let’s complete the trio with the newly introduced **`@switch`** directive — a clean and readable way to handle multiple conditional views.
+
+---
+
+## 🔀 What is `@switch`?
+
+The `@switch` block allows Angular templates to conditionally render **one of several possible blocks**, based on the result of a single expression — just like JavaScript’s `switch` statement.
+
+---
+
+## 🔧 Syntax
+
+```html
+@switch (expression) {
+  @case (value1) {
+    <!-- Template for case value1 -->
+  }
+  @case (value2) {
+    <!-- Template for case value2 -->
+  }
+  @default {
+    <!-- Fallback template if no case matches -->
+  }
+}
+```
+
+---
+
+## 🧪 Example: Request Status Block
+
+```html
+<div class="status">
+  @switch (status()) {
+    @case ('Init') {
+      <span>Request Init</span>
+    }
+    @case ('Loading') {
+      <span>Request In Progress</span>
+    }
+    @case ('Completed') {
+      <span>Request Completed</span>
+    }
+    @default {
+      <span>Status not available</span>
+    }
+  }
+</div>
+
+<div class="btn-container">
+  <button type="button" (click)="requestChange('Init')">Init Request</button>
+  <button type="button" (click)="requestChange('Loading')">Request In Progress</button>
+  <button type="button" (click)="requestChange('Completed')">Request Completed</button>
+</div>
+```
+
+---
+
+## 🎯 Component Code
+
+```ts
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-status',
+  templateUrl: './status.html',
+  styleUrl: './status.scss'
+})
+export class StatusComponent {
+  status = signal<string>(''); // Starts as empty
+
+  requestChange(value: string) {
+    this.status.set(value);
+  }
+}
+```
+
+---
+
+## 📌 Notes:
+
+* `@switch` **compares using strict equality (`===`)**.
+* `@default` is **optional**.
+* There’s **no fallthrough** like in JS. Each case is isolated — so no need for `break` or `return`.
+
+---
+
+## 💡 Use Case Ideas
+
+* Displaying UI states like *Init*, *Loading*, *Error*, *Success*
+* Rendering different dashboards or panels based on roles or permissions
+* Switching views inside tabs or sections based on current selection
+
+---
+
+## ✅ Summary of `@switch`
+
+| Feature          | Behavior                                   |
+| ---------------- | ------------------------------------------ |
+| Strict Compare   | Uses `===` to match values                 |
+| No Fallthrough   | Each `@case` is isolated                   |
+| Optional Default | `@default` is a fallback but not mandatory |
+| Clean Syntax     | Clear, nested, and familiar structure      |
+
+---
+
+## 🧵 Final Words
+
+With `@if`, `@for`, and now `@switch`, Angular 20 templates just got a **huge upgrade** in readability, reactivity, and structure.
+
+Missed previous parts?
+➡️ [Part 1: @if](#)
+➡️ [Part 2: @for](#)
+
+---
+
+Stay tuned for bonus tips and performance best practices in the next post! 🔥
+
+---
+
+**Tags:**
+\#angular #angular20 #frontend #javascript #webdev #tutorial #controlflow
+
+---
+
+Would you like a **funny cover image** for this part too? Like a `@switch` panel replacing a messy `*ngIf + ngSwitch + template` combo? Let me know!
+
+
+********************************************************************************************
+
+
+
+Here's a Dev.to–style blog post based on your provided Angular 20 `@switch` example:
+
+---
+
+# 🧠 Angular 20: Say Goodbye to `ngSwitch`, Hello to `@switch` 🚀
+
+Hey Angular enthusiasts!
+Angular 20 is here, and with it comes a fresh way to manage conditional rendering. One of the coolest changes? The good ol’ `ngSwitch` is now officially deprecated, replaced by the modern and more readable `@switch` block!
+
+In this post (Part 3 of our Control Flow Series), let’s explore how the new `@switch` directive simplifies things — with a hands-on example.
+
+---
+
+## 🎯 What's `@switch`?
+
+Angular’s new `@switch` block is inspired by the familiar JavaScript `switch` statement. It lets you render content conditionally based on a value, using `@case` and `@default`.
+
+### 📌 Syntax:
+
+```html
+@switch (expression) {
+  @case (value1) {
+    <!-- Render this if expression === value1 -->
+  }
+  @case (value2) {
+    <!-- Render this if expression === value2 -->
+  }
+  @default {
+    <!-- Fallback if no case matches -->
+  }
+}
+```
+
+---
+
+## 💡 Real-world Example: Status Viewer
+
+Let’s build a simple component that shows the status of a request and lets users update it with the click of a button.
+
+### 🧾 Template (HTML)
+
+```html
+<div class="status">
+  @switch (status()) {
+    @case ('Init') {
+      <span>Request Init</span>
+    }
+    @case ('Loading') {
+      <span>Request In Progress</span>
+    }
+    @case ('Completed') {
+      <span>Request Completed</span>
+    }
+    @default {
+      <span>Status not available</span>
+    }
+  }
+</div>
+
+<div class="btn-container">
+  <button type="button" (click)="requestChange('Init')">Init Request</button>
+  <button type="button" (click)="requestChange('Loading')">Request In Progress</button>
+  <button type="button" (click)="requestChange('Completed')">Request Completed</button>
+</div>
+```
+
+### 🧠 Component (TypeScript)
+
+```ts
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-status',
+  standalone: true,
+  templateUrl: './status.html'
+})
+export class StatusComponent {
+  status = signal<string>(''); // Initial status is empty
+
+  requestChange(newStatus: string) {
+    this.status.set(newStatus);
+  }
+}
+```
+
+---
+
+## 📝 Notes
+
+* The value of `@switch(condition)` is matched using the strict `===` operator.
+* `@default` is optional but helpful when the input doesn’t match any cases.
+* Unlike JavaScript, there's no fallthrough — you don’t need a `break` after each case.
+* This block improves template readability and maintainability.
+
+---
+
+## 🧪 Output Preview
+
+On component load, the default message is shown (`Status not available`).
+Clicking a button updates the status dynamically, and the matching case content is rendered — all without cluttering your component with conditionals.
+
+---
+
+## 🔚 Wrapping Up
+
+Angular 20’s control flow revolution brings clarity and structure to templates. The new `@switch` is cleaner, safer, and more intuitive than `ngSwitch`.
+
+Next up in this series, we’ll dive deeper into edge cases and nested blocks.
+Until then — keep switching the smart way with `@switch`! 😄
+
+---
+
+If you found this helpful, don’t forget to ❤️ or 🦄 this post!
+Also check out [Part 1: `@if` and `@else`](#) and [Part 2: `@for`](#) in this Angular Control Flow series.
+
+---
+
+Let me know if you'd like the full Markdown version or if you want it formatted for Medium, Hashnode, or LinkedIn too.

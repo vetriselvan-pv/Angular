@@ -1,0 +1,5 @@
+
+what happen in the DOM when we use track in for loop 
+What happen inside when @if is used in temnplate 
+What happen inside when @for is used in template
+what happen inside when @switch is used in template

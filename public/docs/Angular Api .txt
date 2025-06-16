@@ -1,0 +1,387 @@
+
+
+
+exponentiation operator : 
+            Add support for the exponentiation operator (**) in templates
+
+In Keyword : 
+        in operator lets you check whether an object contains a specific property before interpolating its value.
+
+Void Operator :  
+    
+
+
+Hey Angular 20 got released recently and as we expected the team continues to stablize its signal based APIs: 
+Let's deep dive into some of the signal based APIs. 
+
+    toSignal 
+
+    It allows you to convert an observable stream into a signal so that it can be used in Angular’s fine-grained reactive system.
+    You can conver your api response into signals in a easy way . 
+ 
+    toSignal<T>(source: Observable<T>, options: {
+        initialValue?: unknown;
+        requireSync?: boolean;
+        manualCleanup?: boolean;
+        injector?: Injector;
+        equal?: ValueEqualityFn<T>;
+        }): Signal<T>
+ 
+
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit, signal, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+
+@Component({
+  selector: 'app-angular-api',
+  imports: [],
+  templateUrl: './angular-api.html',
+  styleUrl: './angular-api.scss',
+})
+export class AngularApi implements OnInit { 
+
+ URL = './json/country.json';
+  private http: HttpClient = inject(HttpClient);
+  countryList = toSignal(
+    this.http.get<any>(this.URL).pipe(map((res: any) => res))
+  );
+
+  ngOnInit(): void {
+     effect( 
+      (onCleanup) => {
+        console.log(this.timerLog());
+        onCleanup(() => {
+          console.log('clean up callback', this.angularApi.timerLog());
+        });
+      } 
+    );
+  }
+} 
+
+In the above example we are trying to load the list of country from a json file using http request .
+ In the console if you see the effect callback will be triggered twice as the value of the countryList signal got consoled. 
+
+ Note :
+         onCleanup() when will be Triggered ?
+            When injection context is destroyed (if effect is tied to the angular lifecycle hook ) 
+            When signal dependencies change, and the effect reruns. 
+
+
+What about requireSync options in toSignal ? 
+
+  will assert that the observable produces a value immediately upon subscription
+  Angular immagine that you are converting the synchronous stream like BehaviorSubject or ReplaySubject to signal. 
+  if the source is not matching with synchronous stream it will throw the runtime error. 
+  With requireSync set to true, toSignal will assert that the Observable produces a value immediately upon subscription.
+  No initialValue is needed in this case, and the returned signal does not include an undefined type.
+  
+  Example :  
+ 
+   countryList = toSignal(
+    of([
+      {
+        name: {
+          common: 'Aruba',
+          official: 'Aruba',
+        },
+        region: 'Americas',
+        flag: '\ud83c\udde6\ud83c\uddfc',
+      },
+    ]),
+    { requireSync: true }
+  );
+
+  this piece of code you can easily understand that synchronously countryList variable get the value. Let's jump into other cases. 
+
+    countryList = toSignal(
+    of([
+      {
+        name: {
+          common: 'Aruba',
+          official: 'Aruba',
+        },
+        region: 'Americas',
+        flag: '\ud83c\udde6\ud83c\uddfc',
+      },
+    ]).pipe(delay(500)),
+    { requireSync: true }
+  );
+
+  Now just imagine the same code working above is now throw error. Yeah by adding the delay operator the observable will converted to asynchronous. 
+  In the console you can see the error 
+   ERROR RuntimeError: NG0601: `toSignal()` called with `requireSync` but `Observable` did not emit synchronously.
+
+  ` countryList = toSignal(
+    this.http.get<any>(this.URL).pipe(map((res: any) => res )),{ requireSync : true }
+  );`
+
+the above both example won't work. 
+
+Note : 
+    timer() , interval(), observable with delay pipe operator, and http calls are comes under asynchronous. 
+    of, BehaviorSubject or ReplaySubject are best example for synchronous stream of value. 
+
+ 
+initialValue : 
+
+  this provision allow us to set the initial value of the toSignal if not defined means initialValue will be undefined.
+  This will be the value of the signal until the observable emits its first value
+
+ timer$ = timer(1000);
+  timerLog = toSignal(this.timer$, {
+    initialValue: 0
+  });
+
+  Now if you see the console the initial value of the signal will be 0 , 
+
+Equal : 
+
+  A comparison function which defines equality for values emitted by the observable .as shown in the below example callback function with previous value and the current value . based on that we need add the logic. 
+  if the return value will be true means the signal won't get updated. If the value is false the signal will get update. you can refer the below attached screenshot. 
+
+   timer$ = timer(1000);
+  timerLog = toSignal(this.timer$, {
+    initialValue: 0,
+    equal: (a: number, b: number) => {
+      console.log(a, b);
+      return b === 5;
+    },
+  });
+
+Injector : 
+
+    Basically you need to initialize the toSignal inside injection context . If you try to initialize in the ngoninit or someother place basically out of the injection . 
+    you will get the below error in the console. 
+   ERROR RuntimeError: NG0203: toSignal() can only be used within an injection context such as a constructor, a factory function, a field initializer, or a function used with `runInInjectionContext`
+
+   But still you want to use means you can use the option injector . 
+
+    this.countryList = toSignal(
+      this.http.get<any>(this.URL).pipe(map((res: any) => res)),
+      {
+        injector : this._injector
+      }
+    );
+  Now you can happily code 
+
+manualCleanup : 
+
+  manualCleanup will be linked with the injector . if Injector which will provide the DestroyRef used to clean up the Observable subscription.
+  if not then a DestroyRef will be retrieved from the current injection context, unless manual cleanup is requested.
+  bydefault manualCleanup will be false . if you change it true . this, letting you decide when to end the subscription.
+ this.countryList = toSignal(
+      this.http.get<any>(this.URL).pipe(takeUntil(this._destroy$),map((res: any) => res)),
+      {
+       manualCleanup : true
+      }
+    );
+Note : 
+subscription will be automatically cleaned up when the current injection context is destroyed.
+which mean auto unsubscribe will be happen when the  Component got destroyed.
+
+ 
+
+
+ -----------------------------------------------------
+
+
+ Absolutely! Here's your content rewritten into a clean, informative, and beginner-friendly **Dev.to blog post** format with proper markdown, headings, and notes:
+
+---
+
+# 🚀 Exploring `toSignal()` in Angular 20 — A Deep Dive into Signal-Based APIs
+
+Angular 20 has officially landed! 🎉 As expected, one of the most exciting updates is the continued evolution of **Signal-based APIs**, a huge step forward in Angular's reactive programming model.
+
+In this post, we'll explore one such API — **`toSignal()`** — and learn how it helps bridge the gap between Observables and Signals.
+
+---
+
+## 🔁 What is `toSignal()`?
+
+The `toSignal()` function allows you to convert an **Observable stream** into a **Signal**, enabling integration with Angular’s fine-grained reactive system.
+
+This makes it easier to work with API responses, state changes, and other reactive data sources in a way that's more performant and declarative.
+
+```ts
+toSignal<T>(source: Observable<T>, options?: {
+  initialValue?: unknown;
+  requireSync?: boolean;
+  manualCleanup?: boolean;
+  injector?: Injector;
+  equal?: ValueEqualityFn<T>;
+}): Signal<T>
+```
+
+---
+
+## ✅ Basic Example: Converting an HTTP Observable to a Signal
+
+Here’s a quick demo of how `toSignal()` can be used to fetch data from a JSON file and convert the response into a Signal.
+
+```ts
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit, effect } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+
+@Component({
+  selector: 'app-angular-api',
+  templateUrl: './angular-api.html',
+  styleUrl: './angular-api.scss',
+})
+export class AngularApi implements OnInit {
+  private http = inject(HttpClient);
+  URL = './json/country.json';
+
+  countryList = toSignal(
+    this.http.get<any>(this.URL).pipe(map((res) => res))
+  );
+
+  ngOnInit(): void {
+    effect((onCleanup) => {
+      console.log(this.timerLog());
+      onCleanup(() => {
+        console.log('Cleanup callback');
+      });
+    });
+  }
+}
+```
+
+Here, we use `toSignal()` to convert the HTTP observable into a reactive signal, which automatically updates when the observable emits.
+
+> 🧼 **Note:**
+> The `onCleanup()` inside the `effect()` function gets triggered:
+>
+> * When the injection context is destroyed (e.g., component gets destroyed)
+> * Or when the signal dependency changes and the effect re-runs.
+
+---
+
+## ⚠️ `requireSync` Option
+
+When `requireSync: true` is used, Angular expects the observable to emit **immediately upon subscription**.
+
+### ✅ Works with Synchronous Observables
+
+```ts
+countryList = toSignal(
+  of([{ name: { common: 'Aruba' }, region: 'Americas', flag: '🇦🇼' }]),
+  { requireSync: true }
+);
+```
+
+Since `of()` emits synchronously, this works just fine.
+
+### ❌ Fails with Asynchronous Observables
+
+```ts
+countryList = toSignal(
+  of([{ name: { common: 'Aruba' } }]).pipe(delay(500)),
+  { requireSync: true }
+);
+```
+
+> 💥 Adding a delay turns the stream asynchronous, and Angular throws an error:
+>
+> ```
+> ERROR NG0601: toSignal() called with requireSync but Observable did not emit synchronously.
+> ```
+
+> 🧠 **Quick Tip:**
+> `timer()`, `interval()`, and HTTP calls are **asynchronous**,
+> while `of()`, `BehaviorSubject`, and `ReplaySubject` are **synchronous**.
+
+---
+
+## 🛠️ `initialValue` Option
+
+You can provide a default value for your signal using the `initialValue` option. This is useful when your observable takes time to emit.
+
+```ts
+timer$ = timer(1000);
+timerLog = toSignal(timer$, {
+  initialValue: 0
+});
+```
+
+> 📝 The signal will start with the value `0` and update when `timer$` emits.
+
+---
+
+## 🔁 Custom Equality with `equal`
+
+The `equal` function allows you to define custom logic to determine whether the signal should update.
+
+```ts
+timer$ = timer(1000);
+timerLog = toSignal(timer$, {
+  initialValue: 0,
+  equal: (prev, curr) => {
+    console.log(prev, curr);
+    return curr === 5;
+  }
+});
+```
+
+> ✅ If the function returns `true`, the signal won’t update.
+> ❌ If it returns `false`, it will.
+
+---
+
+## 💉 Using `injector` Outside the Injection Context
+
+Trying to use `toSignal()` outside of the constructor or `runInInjectionContext()` will result in:
+
+```bash
+ERROR NG0203: toSignal() can only be used within an injection context.
+```
+
+But you can fix this by explicitly passing the `injector`:
+
+```ts
+this.countryList = toSignal(
+  this.http.get<any>(this.URL).pipe(map((res) => res)),
+  { injector: this._injector }
+);
+```
+
+---
+
+## 🧹 Controlling Cleanup with `manualCleanup`
+
+By default, `toSignal()` will automatically unsubscribe when the component is destroyed. But with `manualCleanup: true`, **you control the cleanup**.
+
+```ts
+this.countryList = toSignal(
+  this.http.get<any>(this.URL).pipe(
+    takeUntil(this._destroy$),
+    map((res: any) => res)
+  ),
+  { manualCleanup: true }
+);
+```
+
+---
+
+## 📌 Final Thoughts
+
+Angular 20's signal APIs—especially `toSignal()`—are making state management and reactive data flow much easier and more powerful.
+
+Whether you're working with async HTTP calls, state streams, or UI interactions, understanding how to leverage `toSignal()` and its options can help you build faster, cleaner, and more maintainable apps.
+
+---
+
+Let me know if you'd like a follow-up post on `computed`, `effect`, or other new Angular 20 features!
+
+---
+
+### ✍️ Author: [Vetriselvan](https://dev.to/yourprofile)
+
+👨‍💻 Frontend Developer | Code Lover | Exploring Angular’s future
+
+---
+
+Would you like a cover image or tags (e.g., `#angular`, `#rxjs`, `#frontend`, `#webdev`) added for this post?

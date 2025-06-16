@@ -1,0 +1,42 @@
+.country-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  .country {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    border: 1px solid #ddd;
+    padding: 8px;
+    background-color: #fff;
+    border-radius: 4px;
+    gap: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    .label {
+      display: flex;
+    }
+    .variable {
+      display: flex;
+      span {
+        display: block;
+      }
+    }
+  }
+}
+
+.status{
+    padding-bottom: 16px;
+}
+
+.btn-container{
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    button{
+        background-color: #fff;
+        border: 1px solid lightgreen;
+        min-width: 130px;
+        height: 30px;
+    }
+}

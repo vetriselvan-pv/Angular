@@ -1,0 +1,21 @@
+
+<div class="login-wrapper">
+  @if (loggedInRole() === 'ADMIN') {
+    <span>
+        User logged in have ADMIN access
+    </span>
+  }
+   @else if (loggedInRole() === 'DEVELOPER') {
+    <span>
+        User logged in have DEVELOPER access
+    </span>
+  }@else {
+    <span>
+        User logged doesn't have any access
+    </span>
+  }
+</div>
+
+
+<button type="button" (click)="userChange('ADMIN')" > Admin user </button>
+<button type="button" (click)="userChange('DEVELOPER' )" > Developer user </button>

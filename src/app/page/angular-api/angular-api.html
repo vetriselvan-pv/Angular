@@ -1,0 +1,75 @@
+<!-- For tosignal example -->
+<!-- <div class="country-list"> 
+@for (country of countryList(); track $index) {
+    <div class="country">
+        <span>{{ country.flag  }}</span>
+      <span> {{ country.name.common }} </span>      
+    </div> 
+} 
+</div> -->
+
+<!-- <a [routerLink]="['/login']" routerLinkActive="router-link-active" >Login</a> -->
+
+<!-- <button (click)="stopTimer()" type="button"> Stop Interval </button>
+
+<button (click)="consoleTimerLog()"  type="button"> Console Last Timer </button> -->
+
+<!-- <button (click)="stopTimerLog()"  type="button"> Stop Timer signal </button> -->
+
+<!-- ********************************************************************  switch example start ******************************************************************** -->
+
+<!-- <div class="status">
+  @switch (status()) {
+    @case ('Init') {
+      <span>Request Init</span>
+    }
+    @case ('Loading') {
+      <span>Request In progress</span>
+    }
+    @case ('Completed') {
+      <span>Request Completed</span>
+    }
+    @default {
+      <span> Status not available</span>
+    }
+  }
+</div>
+
+<div class="btn-container">
+<button type="button" (click)="requestChange('Init')">Init Request</button>
+
+<button type="button"(click)="requestChange('Loading')"> Request In Progress</button>
+
+<button type="button" (click)="requestChange('Completed')">Request Completed</button>
+</div> -->
+
+<!-- ********************************************************************  switch example end ******************************************************************** -->
+
+<!--********************************************************************  @let example start ******************************************************************** -->
+
+<div class="country-list">
+  @let currentDate = date;
+  @if (country$ | async ; as countryList) { 
+  @for (country of countryList; track $index ; let index = $index , even = $even, odd
+  = $odd, last = $last , first = $first, count = $count; ) {
+  <div class="country">
+    <div class="label">
+      <span>{{ index }} : {{ country.flag }}</span>
+      <span> {{ country.name.common }} </span>
+    </div>
+    <hr />
+    <div class="variable">
+      <span style="color: red">Odd : {{ odd }} </span>
+      <span style="color: blue">Even : {{ even }} </span>
+      <span style="color: aqua">Last : {{ last }} </span>
+      <span style="color: orange">First : {{ first }} </span>
+      <span style="color: green">Count : {{ count }} </span>
+    </div>
+    <span> time : {{ currentDate | json }} </span>
+  </div>
+
+  } }
+</div>
+{{ currentDate }}
+
+<!--********************************************************************  @let example end ******************************************************************** -->

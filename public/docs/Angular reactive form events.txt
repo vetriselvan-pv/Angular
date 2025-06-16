@@ -1,0 +1,134 @@
+
+                        " Events in Angular Reactive Forms :  Handling Form Events Like a Pro " 
+
+Reactive Forms in Angular offer fine-grained control over form behavior.But did you know that you can also tap to the Events in reactive forms 
+The Angular introduce the new EventEmitter called Events. It offer more control over the forms . 
+
+The event field is implemented inside the AbstractControl class and is available to all classes that inherit from it: FormControl, FormGroup, FormRecord, and FormArray.
+
+Following are the events emitted by abstract control. 
+
+         TouchedChangeEvent : { touched : boolean , source : FormControl }
+                is triggered when the user interacts with the control for the first time. it will triggered on blur even the value of the control is not changed.
+
+         PristineChangeEvent{ pristine: true, source: FormControl}
+                it will triggred when the initial value of the control got changed. 
+
+         ValueChangeEvent {value: {…}, source: FormControl}
+                Whenever the user changes the value by programatically or manually value change will be triggered . 
+
+         StatusChangeEvent {status: 'INVALID', source: FormControl}
+                it will triggered when the value of the control irrespective to the control have validators or not . statuschangeEvent will be triggered twice . Once, when the status property is set to PENDING, then for the second time, when the validator returns the based on the validation.
+
+
+Initialise a form with two simple control . Example login form with username and password as control. you can refer the below code 
+
+    login.component.html
+            <div class="login">
+                <form [formGroup]="formGroup">
+                    <div class="formcontrol">
+                        <label for="username">User Name : </label>
+                        <input type="text" id="username" formControlName="username" >
+                    </div>
+                    <div class="formcontrol">
+                        <label for="password">Password : </label>
+                        <input type="text" id="password" formControlName="password">
+                    </div>
+                    <button type="button" (click)="onClick()" >Click</button>
+                </form>
+            </div>
+
+        login.component.ts 
+            import { CommonModule } from '@angular/common';
+            import { Component, inject, OnInit } from '@angular/core';
+            import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+            @Component({
+            selector: 'app-login',
+            imports: [ReactiveFormsModule, CommonModule],
+            templateUrl: './login.component.html',
+            styleUrl: './login.component.scss'
+            })
+            export class LoginComponent implements OnInit{
+            private formBuilder : FormBuilder = inject(FormBuilder);
+
+            formGroup : FormGroup = this.formBuilder.nonNullable.group({
+                username: ['' , [Validators.required]],
+                password: ['', [Validators.required]]
+            });
+
+            constructor(){
+                
+            }
+
+            ngOnInit(){ 
+                this.formGroup.events.subscribe({
+                next : (e) => {
+                    console.log(e)
+                },
+                error : (err) => {
+                    console.error(err)
+                },
+                complete : () => {
+                    console.log('completed')
+                }
+                })  
+                console.log(this.formGroup.touched , this.formGroup.pristine)
+            }
+            }
+
+case 1 : 
+
+            Now the form is initialized and not action happened in the input . If you console the touched and pristine of the formGroup in the oninit or afterviewInit hook 
+            the touched state of the form will be false bacause not manually action happened in the form .Meanwhile the pristine state of the form will be true . 
+            
+case 2 : 
+            Now the username got changed now the pristinechangevent will got triggered and the pristine of the formGroup is false. As metioned early the prisitine event will triggered once when the formgroup value changes for the first time . 
+            on sequence valuechange event will get triggered and value you can get the changed value . then statuschange will get triggered and you can get the status of the FormGroup. then touchchangeevent will get triggered .
+
+case 3 :  
+            Now i entered the value for the password field . if you notice attached record you can understand only the valuechange and statuchange event got triggered. 
+            this is because the touch and pristine status of the formgroup is already got triggered. there is another usecase we need to understand now we are subscribe to  the formgroup so the touch and pristine change events got triggered as any one of the control got changed for the first Time. 
+            If the subscribe to the particular control events the touchchange and pristinechange event will get triggered once the control state got changed. you can refer the attached screenshot . 
+
+              /**
+                * Events for the password field got subscribed
+              */
+                this.formGroup.get('password')?.events.subscribe({
+                    next : (e) => {
+                        console.log('password control', e)
+                    },
+                    error : (err) => {
+                        console.error(err)
+                    },
+                    complete : () => {
+                        console.log('completed')
+                    }
+                    })  
+
+            the order of event execution will be prisitnechange event, valuechange event, statuschangeevent of the control will be happened first the formgroup level valuechange event and statuschangeevent will get triggered. 
+            after that control level touchchangeevent got triggered. Anyhow the above order of execution will be appiled only for the time of fromgroup is already touched or prisitne. 
+            otherwise theformgroup level pristinechange event and touchchangeevent will get triggered even before the control level events . same case will not be appiled for the valuechange and statuchange events . those events will be triggered at the control level first and then in the formgroup level. 
+Case 4 : 
+            As mentioned above here is the example for the formgroup level change events . Here i subscribe the events for both formGroup and username. now i'm going to change the username form the first time and you can notice the events triggered . 
+             /**
+            * Events for the username field got subscribed
+            */
+            this.formGroup.get('username')?.events.subscribe({
+                next : (e) => {
+                    console.log('password control', e)
+                },
+                error : (err) => {
+                    console.error(err)
+                },
+                complete : () => {
+                    console.log('completed')
+                }
+                })  
+
+
+ Conclusion 
+
+        we discussed about the pristinechange, valuechange, statuschange and touchchange events of the formgroup and formcontrol level. 
+        In the contined blog we can discuss about how to effectively subscribe the events on the view of performance optimization. 
+\\Events in Angular Reactive Forms: Handling Form Events Like a Pro
