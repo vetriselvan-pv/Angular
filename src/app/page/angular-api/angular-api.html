@@ -47,9 +47,9 @@
 
 <!--********************************************************************  @let example start ******************************************************************** -->
 
-<div class="country-list">
-  @let currentDate = date;
-  @if (country$ | async ; as countryList) { 
+<div class="country-list">  
+  @let countryList = country$ | async ;
+  @if (countryList) { 
   @for (country of countryList; track $index ; let index = $index , even = $even, odd
   = $odd, last = $last , first = $first, count = $count; ) {
   <div class="country">
@@ -58,18 +58,17 @@
       <span> {{ country.name.common }} </span>
     </div>
     <hr />
-    <div class="variable">
+    <!-- <div class="variable">
       <span style="color: red">Odd : {{ odd }} </span>
       <span style="color: blue">Even : {{ even }} </span>
       <span style="color: aqua">Last : {{ last }} </span>
       <span style="color: orange">First : {{ first }} </span>
       <span style="color: green">Count : {{ count }} </span>
-    </div>
-    <span> time : {{ currentDate | json }} </span>
+    </div>  -->
   </div>
 
-  } }
+  } } 
 </div>
-{{ currentDate }}
+
 
 <!--********************************************************************  @let example end ******************************************************************** -->

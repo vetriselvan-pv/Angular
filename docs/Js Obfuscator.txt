@@ -1,0 +1,113 @@
+ Js Obfuscator
+
+Hey Devs 
+    obfuscation a strange word in software development right?. May be some knows it previous and honestly i came to know when i the an issue in the VAPT testing. 
+    testers can able to debug and change the value to the payload even though we are doing the RSA and AES encryption . 
+    Then spending hours in internet i came to know about the js Obfuscator. 
+    
+     Js Obfuscator is tool used to convert the javascript file into non readable , difficult to read code. 
+
+     Some may thing that minification is there in build file. There is difference between minification and the obfuscation. Minification only read the file size by  removing the whitespace and shortening the variable names. 
+
+How to integarte with angular ?
+
+        In angular by default build process will do lots of things still we can read that in the browser source tab using developer tool 
+    For example we are building the angular application using ng build and run it using http-server to show the code in the soruce tab. 
+
+    If you see the below screen of the serving code. You can see the source code. 
+
+    // screenshot attached for the refrence 
+
+    To overcome this issue. we can use the js Obfuscator to convert the code into non readable code. 
+    Step : 1 
+        Install the required packages 
+        @angular-builders/custom-webpack
+        webpack-obfuscator 
+    
+    Step : 2
+        If you are using angular 20 . you need to do some changes in the angular.json
+        "builder": "@angular-builders/custom-webpack:browser"
+
+    define builder pack .By default the builder will be   "builder": "@angular/build:application" . then addition to these add the customWebpackConfig . 
+    You can chekc the below code for refrence . 
+    "customWebpackConfig": {
+              "path": "./custom-webpack.config.js",
+              "replaceDuplicatePlugins": true,
+               "mergeStrategies": {
+                "module.rules": "prepend"
+              }
+            }
+
+In the above code you can see the custom config js. 
+Create a file with the name you define in the path key . 
+
+let JavaScriptObfuscator = require("webpack-obfuscator");
+
+module.exports = {
+  module: {},
+  plugins: [
+    new JavaScriptObfuscator(
+      {
+        debugProtection: true,
+        disableConsoleOutput: true,
+        renameGlobals : true,
+        transformObjectKeys : false
+      },
+      ["vendor.js"]
+    ),
+  ],
+};
+
+you can see a JavaScriptObfuscator class having several options . Below is the list of options you can configured 
+
+Make sure the below configuration are done in angular.json
+ "outputPath": "dist/angular",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+
+Now if you run ng build . you can see the build files inside dist folder. 
+If you see the files under source tab . you can see the obfuscated file . check the below screenshot . 
+
+
+Pros : 
+  It will make your code difficult to read by others. 
+  Obfuscation can discourage or delay code tampering or cheating in browser-based games or apps.
+  Protects proprietary logic, algorithms, and licensing mechanisms from casual inspection.
+
+Cons : 
+  it will increase the build file size. you can refer the below screenshot , Obfuscation can increase bundle size, especially with string encryption or runtime decoding.
+  Obfuscation is not encryption. Determined attackers can still reverse engineer obfuscated code.
+  New browser or runtime changes may break obfuscated patterns, especially if using advanced or experimental techniques.
+
+    
+# JavaScript Obfuscator Options
+
+
+| Option                        | Type      | Default         | Description                                                                                   |
+|-------------------------------|-----------|-----------------|-----------------------------------------------------------------------------------------------|
+| compact                       | boolean   | true            | Removes line breaks and extra spaces to reduce code size.                                     |
+| controlFlowFlattening         | boolean   | false           | Converts code control flow to a more complex structure.                                       |
+| controlFlowFlatteningThreshold| number    | 0.75            | Probability (0–1) to apply control flow flattening to each node.                              |
+| deadCodeInjection             | boolean   | false           | Adds random dead code blocks to the output.                                                   |
+| deadCodeInjectionThreshold    | number    | 0.4             | Probability (0–1) to inject dead code.                                                        |
+| debugProtection               | boolean   | false           | Makes it harder to use browser DevTools on the obfuscated code.                               |
+| debugProtectionInterval       | boolean   | false           | Periodically checks for DevTools if debugProtection is enabled.                               |
+| disableConsoleOutput          | boolean   | false           | Removes or disables all console.* calls.                                                      |
+| identifierNamesGenerator      | string    | 'hexadecimal'   | Algorithm for variable names: 'hexadecimal', 'mangled', 'dictionary'.                         |
+| renameGlobals                 | boolean   | false           | Obfuscates global variable and function names.                                                |
+| rotateStringArray             | boolean   | true            | Shuffles the string array after every code transformation.                                    |
+| selfDefending                 | boolean   | false           | Makes code harder to beautify or format.                                                      |
+| splitStrings                  | boolean   | false           | Splits strings into chunks and concatenates them at runtime.                                  |
+| splitStringsChunkLength       | number    | 10              | Length of each chunk when splitting strings.                                                  |
+| stringArray                   | boolean   | true            | Moves all strings to a string array and replaces them with array calls.                       |
+| stringArrayEncoding           | string[]  | []              | Encodes the string array: 'none', 'base64', 'rc4'.                                            |
+| stringArrayThreshold          | number    | 0.75            | Probability (0–1) of moving each string to the string array.                                  |
+| transformObjectKeys           | boolean   | false           | Obfuscates object keys.                                                                       |
+| unicodeEscapeSequence         | boolean   | false           | Replaces all string literals with their unicode escape sequences.                             |
+| sourceMap                     | boolean   | false           | Generates source maps for the obfuscated code.                                                |
+| target                        | string    | 'browser'       | Target environment: 'browser', 'node'.                                                        |
+| numbersToExpressions          | boolean   | false           | Converts numbers to expressions.                                                              |
+| simplify                      | boolean   | true            | Simplifies code after obfuscation.                                                            |
+| stringArrayIndexesType        | string    | 'hexadecimal-number' | Type of indexes for string array: 'hexadecimal-number', 'hexadecimal-numeric-string', etc. |
+
+> For a full and up-to-date list, always refer to the [official documentation](https://github.com/javascript-obfuscator/javascript-obfuscator#javascript-obfuscator-options).

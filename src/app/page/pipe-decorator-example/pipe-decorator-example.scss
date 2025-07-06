@@ -1,0 +1,45 @@
+@use '../../../styles/textarea.scss' as *;
+@use '../../../styles/button.scss' as *;
+
+
+.table-header{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 16px;
+
+}
+
+.table-body{
+    display: flex;
+    justify-content: space-around;
+    align-items: center; 
+    padding: 10px;
+    border-radius: 5px; 
+    align-items: center;
+
+}
+.table-body:nth-child(even){
+    background-color: #3498db1a;
+}
+.table-body:nth-child(odd){
+    background-color: #fff
+}
+
+.index{
+    width: 10%;
+}
+.country{
+    width: 20%;
+}
+.phoneNumber{
+    width: 20%;
+}
+.formattedValue{
+    width: 20%;
+}

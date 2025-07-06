@@ -1,0 +1,11 @@
+.zoom-text {
+  display: inline-block; /* Essential for correct centering of the zoom */
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
+  /* Add other desired text styles like font-size, color, etc. */
+}
+
+.zoom-text:hover {
+  transform: scale(1.2); /* Zooms the text to 120% on hover */
+}
+ 
+

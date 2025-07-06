@@ -1,0 +1,555 @@
+
+ @Attribute decorator in angular 
+
+ Hi devlopers , 
+
+ Just a another day while discussing with the collegues. We shared the interesting topic about decorators in typescript and 
+started exploring the angular.dev . In that we found one of the intersting decorator and i just want to share it with all of you. 
+
+@Attribute decorator : 
+
+ we are using @Attribute rarely but still its one the powerful concept in angular .@Attribute means : 
+ Parameter decorator for a directive constructor that designates a host-element attribute whose value is injected as a constant string literal.
+  Bascially , 
+ It allows a class (usually a component or directive) to access a static HTML attribute value at construction time, even if it's not bound to an Angular input. 
+ 
+Let see how to implement the @Attribute in real time use case : 
+ 
+In the below example i create a directive named FontType. which have the @Attribute decorator in the name of font. 
+
+import { Attribute, Directive, ElementRef, inject, OnInit, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[fontType]'
+})
+export class FontType  implements OnInit{
+
+  private render : Renderer2 = inject(Renderer2);
+  private el : ElementRef  = inject(ElementRef)
+
+  constructor( @Attribute('font') public font : 'underline' | 'italic' | 'bold' | null) { 
+    console.log(font)
+  }
+
+  ngOnInit(): void {
+     switch(this.font){
+        case 'italic' : {
+          this.render.setStyle(this.el.nativeElement ,'color','red');
+           break;
+        };
+        case 'bold' : {
+          this.render.setStyle(this.el.nativeElement ,'color','green');
+           break;
+        };
+        case 'underline' : {
+          this.render.setStyle(this.el.nativeElement ,'color','orange');
+           break;
+        };
+        default : {
+          console.log('font not provided')
+        }
+     }
+  }
+
+}
+
+And i created a component to implement the FontType directive . the component will be below . 
+
+import { Component } from '@angular/core';
+import { FontType } from '../../directive/role';
+
+@Component({
+  selector: 'app-attribute',
+  imports: [FontType],
+  template: `<h1><u>About Me</u></h1>
+    <p>
+      I’m a <b>frontend developer</b> and
+      <b fontType font="bold">freelancer</b> passionate about building
+      beautiful, responsive, and user-friendly web interfaces.
+    </p>
+    <p>
+      I specialize in <b><u fontType font="underline">HTML</u></b
+      >, <b><u fontType font="underline">CSS</u></b
+      >, <b><u fontType font="underline">JavaScript</u></b
+      >, and modern frameworks like <b>React</b> and <b>Vue</b>. I enjoy turning
+      complex problems into simple, elegant solutions.
+    </p>
+    <p>
+      <i fontType font="italic"
+        >I believe that great design is just as important as great code</i
+      >, and I’m always exploring <u>new technologies</u> and tools to enhance
+      user experience.
+    </p>
+    <p>
+      Whether it’s building from scratch or bringing life to an existing
+      project, I’m ready to help.
+      <b
+        ><i><u>Let’s create something amazing together!</u></i></b
+      >
+    </p>`,
+  styleUrl: './attribute.scss',
+})
+export class About {
+  constructor() {
+    console.log('About');
+  }
+}
+
+In the above html if you see the directives are added for certain tag ex. <b>, <u> and <i> . you can end result in the below screenshot. 
+the function of directive is based on the font defined in the html the color will added to the text . 
+
+as we know we have input decorator property to the same thing. why @Attribute is required ? . Well yeah it correct . but there is few difference between 
+@Input and @Attribute .
+
+Breakdown the difference between @Input and @Attribute 
+
+@Atribute is just a static HTML attributes. will read the value during the constructor (gives access to raw attribute values at the time of construction.)
+
+| Feature            | `@Input()`            | `@Attribute()`            |
+| ------------------ | --------------------- | ------------------------- |
+| When value is read | After instantiation   | During instantiation      |
+| Reactive           | Yes                   | No                        |
+| Source             | Angular bindings      | Static HTML attributes    |
+| Use case           | Dynamic input binding | Accessing static metadata |
+
+
+What happens under the hood 
+  Angular compilers process the directive into ivy command as follow : 
+
+   var FontType = class _FontType {
+    font;
+    render = inject3(Renderer2);
+    el = inject3(ElementRef);
+    constructor(font) {
+        this.font = font;
+        console.log(font);
+    }
+    ngOnInit() {
+        switch (this.font) {
+        case "italic":
+            {
+                this.render.setStyle(this.el.nativeElement, "color", "red");
+                break;
+            }
+            ;
+        case "bold":
+            {
+                this.render.setStyle(this.el.nativeElement, "color", "green");
+                break;
+            }
+            ;
+        case "underline":
+            {
+                this.render.setStyle(this.el.nativeElement, "color", "orange");
+                break;
+            }
+            ;
+        default:
+            {
+                console.log("font not provided");
+            }
+        }
+    }
+    static \u0275fac = function FontType_Factory(__ngFactoryType__) {
+        return new (__ngFactoryType__ || _FontType)(i04.\u0275\u0275injectAttribute("font"));
+    }
+    ;
+    static \u0275dir = /* @__PURE__ */
+    i04.\u0275\u0275defineDirective({
+        type: _FontType,
+        selectors: [["", "fontType", ""]]
+    });
+}
+;
+( () => {
+    (typeof ngDevMode === "undefined" || ngDevMode) && i04.\u0275setClassMetadata(FontType, [{
+        type: Directive,
+        args: [{
+            selector: "[fontType]"
+        }]
+    }], () => [{
+        type: void 0,
+        decorators: [{
+            type: Attribute,
+            args: ["font"]
+        }]
+    }], null);
+}
+)();
+
+decorator Attribute will be executed by the angular ivy and the repective value will be injected to the font args. as shown in the below screenshot . 
+at the same time in the component ivy compiled code . 
+
+
+🚫 When Not to Use It
+When the attribute is bound dynamically via Angular (use @Input() instead).
+
+When you need to track changes (since @Attribute() is static).
+
+Now we can check one more thing incase if i manually change the attribute after component init or view init what wil happen ? 
+
+in the directive : 
+
+ ngAfterViewInit(): void {
+    console.log('Before changing the attribute value : ',this.font);
+    this.render.setAttribute(this.el.nativeElement,'font', 'some_random_value');
+    console.warn('After changing the attribute value : ',this.font)
+  }
+
+If you see the below screenshot it will clearly shows that the @Attribute is static and will assign value on constructor . If the value got changed dynamically also it won't get updated. 
+
+
+
+
+
+---
+
+##Medium 
+
+ 
+
+````markdown
+# 🔍 `@Attribute` Decorator in Angular — A Hidden Gem You Should Know
+
+Hey developers 👋,
+
+The other day during a casual team discussion, we stumbled upon something interesting while diving deep into Angular's decorator system. Amid the usual suspects like `@Input`, `@Output`, and `@Inject`, we rediscovered a lesser-used but **powerful** decorator — `@Attribute`.
+
+I hadn’t paid much attention to this one before, so I decided to explore it further. And now I’m here to share my findings with all of you!
+
+---
+
+## 🧠 What Is `@Attribute()`?
+
+The `@Attribute()` decorator is a **parameter decorator** used inside a directive or component constructor. It tells Angular to **inject a static attribute value** from the host HTML element **as a constant string literal** at construction time.
+
+In simple terms:  
+> `@Attribute()` lets your directive or component **access raw HTML attribute values** directly — even if they aren’t bound with Angular syntax.
+
+This is especially useful when you need **static metadata** at initialization that won’t change.
+
+---
+
+## 🔧 Real-World Use Case — Font Styling Directive
+
+Let’s walk through an example. Here, we’ll create a custom directive `FontType` that changes the font color based on the value of a static HTML attribute called `font`.
+
+### 🎯 Directive Code
+
+```ts
+import { Attribute, Directive, ElementRef, inject, OnInit, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[fontType]'
+})
+export class FontTypeDirective implements OnInit {
+  private render = inject(Renderer2);
+  private el = inject(ElementRef);
+
+  constructor(@Attribute('font') public font: 'underline' | 'italic' | 'bold' | null) {
+    console.log('Injected font:', font);
+  }
+
+  ngOnInit(): void {
+    switch (this.font) {
+      case 'italic':
+        this.render.setStyle(this.el.nativeElement, 'color', 'red');
+        break;
+      case 'bold':
+        this.render.setStyle(this.el.nativeElement, 'color', 'green');
+        break;
+      case 'underline':
+        this.render.setStyle(this.el.nativeElement, 'color', 'orange');
+        break;
+      default:
+        console.log('Font not provided');
+    }
+  }
+}
+````
+
+---
+
+### 💡 Usage in a Component
+
+```ts
+@Component({
+  selector: 'app-about',
+  standalone: true,
+  imports: [FontTypeDirective],
+  template: `
+    <h1><u>About Me</u></h1>
+    <p>
+      I’m a <b>frontend developer</b> and
+      <b fontType font="bold">freelancer</b> passionate about building
+      beautiful, responsive, and user-friendly web interfaces.
+    </p>
+    <p>
+      I specialize in <b><u fontType font="underline">HTML</u></b>,
+      <b><u fontType font="underline">CSS</u></b>,
+      <b><u fontType font="underline">JavaScript</u></b>,
+      and modern frameworks like <b>React</b> and <b>Vue</b>.
+    </p>
+    <p>
+      <i fontType font="italic">
+        I believe that great design is just as important as great code
+      </i>
+    </p>
+  `
+})
+export class AboutComponent {
+  constructor() {
+    console.log('AboutComponent initialized');
+  }
+}
+```
+
+In the HTML, you can see the `fontType` directive applied to elements like `<b>`, `<u>`, and `<i>`. The color styling is applied based on the value of the `font` attribute.
+
+---
+
+## ❓ Why Use `@Attribute()` Instead of `@Input()`?
+
+That’s a great question.
+
+`@Input()` is designed for **dynamic Angular bindings** like `[font]="fontValue"`, while `@Attribute()` is ideal for **static attribute values** defined in the raw HTML.
+
+Here’s a comparison:
+
+| Feature            | `@Input()`         | `@Attribute()`         |
+| ------------------ | ------------------ | ---------------------- |
+| When value is read | After construction | During construction    |
+| Reactive           | ✅ Yes              | ❌ No                   |
+| Source             | Angular bindings   | Static HTML attribute  |
+| Use case           | Dynamic behavior   | Static config/metadata |
+
+---
+
+## 🧪 Under the Hood — How Angular Compiles `@Attribute()`
+
+When Angular compiles your directive with Ivy, it generates internal code that injects the attribute directly into the constructor. Here’s a simplified view of what happens:
+
+```ts
+static ɵfac = function FontType_Factory(t) {
+  return new (t || FontType)(ɵɵinjectAttribute('font'));
+};
+```
+
+So in essence, the `@Attribute('font')` decorator becomes a low-level call to Angular’s internal `injectAttribute()` helper, and the string value is passed directly to the constructor.
+
+> This injection is **static and one-time** — it happens during instantiation and does **not** respond to changes in the attribute later.
+
+---
+
+## ⚠️ Gotchas — When Not to Use `@Attribute()`
+
+* **❌ Don't use it with Angular bindings.** If your attribute is dynamic (`[font]="value"`), use `@Input()` instead.
+* **❌ Don’t expect it to update.** Changing the attribute manually after construction won’t update the injected value.
+
+Let’s demonstrate this:
+
+```ts
+ngAfterViewInit(): void {
+  console.log('Before change:', this.font);
+  this.render.setAttribute(this.el.nativeElement, 'font', 'some_other_value');
+  console.log('After change:', this.font);  // Still prints the original value
+}
+```
+
+Result: The logged value won’t change — `@Attribute()` reads the attribute once at construction time and never again.
+
+---
+
+## 🧵 Conclusion
+
+The `@Attribute()` decorator is a quiet but powerful feature of Angular’s DI system. It’s useful when you need **static, non-reactive data** that doesn't rely on Angular's change detection or binding system.
+
+Use it:
+
+* For reading raw attribute values (like `type`, `role`, or `font`).
+* When you don’t want the overhead of Angular bindings.
+* Inside directives or components that rely on metadata from the host element.
+
+
+
+🧠 **Pro tip**: Think of `@Attribute()` as the Angular equivalent of calling `element.getAttribute('foo')`, but in a type-safe, DI-friendly way.
+
+
+
+Let me know if you've used `@Attribute()` in any unique way — or if you'd like me to turn this into a StackBlitz demo you can try out live! 🚀
+
+```
+ 
+
+Here's your updated content restructured and polished into a complete, Medium-style blog post (with Markdown formatting):
+
+---
+
+# 🎯 Rediscovering Angular’s Hidden Gem: `@Attribute()` Decorator
+
+Hey developers 👋,
+
+The other day during a casual team discussion, we stumbled upon something interesting while diving deep into Angular’s decorator system. Amid the usual suspects like `@Input`, `@Output`, and `@Inject`, we rediscovered a lesser-used but powerful decorator — `@Attribute`.
+
+Honestly, I hadn’t paid much attention to it before. But after taking a deeper look, I found it pretty useful for specific scenarios — and now I’m here to share those findings with you!
+
+---
+
+## 🧠 What Is `@Attribute()`?
+
+The `@Attribute()` decorator is a **parameter decorator** used inside a component or directive constructor. It tells Angular to **inject a static attribute value** from the host HTML element **as a constant string literal** during instantiation.
+
+In simpler terms:
+
+> `@Attribute()` allows your directive or component to **access raw, static HTML attribute values** — even if they’re not bound using Angular syntax.
+
+This is especially handy when you need **static metadata** at initialization that isn’t expected to change.
+
+---
+
+## 🔧 Real-World Use Case — Font Styling Directive
+
+Let’s walk through a real example. We’ll create a custom directive called `FontType` that changes the font color based on a custom static HTML attribute: `font`.
+
+### ➕ Step 1: Define the Directive
+
+```ts
+import { Attribute, Directive, ElementRef, inject, OnInit, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[fontType]'
+})
+export class FontType implements OnInit {
+
+  private render: Renderer2 = inject(Renderer2);
+  private el: ElementRef = inject(ElementRef);
+
+  constructor(@Attribute('font') public font: 'underline' | 'italic' | 'bold' | null) {
+    console.log('Injected font attribute:', font);
+  }
+
+  ngOnInit(): void {
+    switch (this.font) {
+      case 'italic':
+        this.render.setStyle(this.el.nativeElement, 'color', 'red');
+        break;
+      case 'bold':
+        this.render.setStyle(this.el.nativeElement, 'color', 'green');
+        break;
+      case 'underline':
+        this.render.setStyle(this.el.nativeElement, 'color', 'orange');
+        break;
+      default:
+        console.log('No font attribute provided.');
+    }
+  }
+}
+```
+
+---
+
+### ➕ Step 2: Use It in a Component Template
+
+```ts
+@Component({
+  selector: 'app-attribute',
+  standalone: true,
+  imports: [FontType],
+  template: `
+    <h1><u>About Me</u></h1>
+    <p>
+      I’m a <b>frontend developer</b> and
+      <b fontType font="bold">freelancer</b> passionate about building
+      responsive, user-friendly web interfaces.
+    </p>
+    <p>
+      I specialize in <b><u fontType font="underline">HTML</u></b>,
+      <b><u fontType font="underline">CSS</u></b>,
+      <b><u fontType font="underline">JavaScript</u></b>, and frameworks like <b>React</b> and <b>Vue</b>.
+    </p>
+    <p>
+      <i fontType font="italic">I believe great design is just as important as great code.</i>
+    </p>
+  `
+})
+export class AboutComponent {
+  constructor() {
+    console.log('AboutComponent initialized');
+  }
+}
+```
+
+The directive reads the static `font` attribute and styles the text based on its value.
+
+---
+
+## 🆚 `@Input()` vs `@Attribute()`
+
+You might be asking — why not just use `@Input()`? Here's how they differ:
+
+| Feature            | `@Input()`                 | `@Attribute()`                |
+| ------------------ | -------------------------- | ----------------------------- |
+| When value is read | After component is created | During component construction |
+| Reactive           | ✅ Yes                      | ❌ No                          |
+| Value source       | Angular binding            | Static HTML attribute         |
+| Use case           | Dynamic props              | Static configuration          |
+
+### When to Use `@Attribute()`
+
+✅ Use when:
+
+* You want to read **static metadata** from the DOM.
+* You need access to the attribute value **before any Angular bindings occur**.
+
+🚫 Avoid when:
+
+* You want to **react to changes**.
+* You’re using **dynamic values** or two-way bindings (use `@Input()` instead).
+
+---
+
+## 🔬 Under the Hood: Ivy & Dependency Injection
+
+Angular's Ivy compiler turns `@Attribute()` into an internal `ɵɵinjectAttribute()` call in the factory function:
+
+```ts
+static ɵfac = function FontType_Factory(t) {
+  return new (t || FontType)(ɵɵinjectAttribute('font'));
+};
+```
+
+This means Angular will extract the attribute from the raw DOM at creation time and pass it directly to the directive or component constructor — no binding, no change detection, just one static injection.
+
+If you later modify the attribute manually via JavaScript or the DOM, the value inside the directive will **not update**, because Angular doesn’t track static attribute changes.
+
+### Example:
+
+```ts
+ngAfterViewInit(): void {
+  console.log('Before change:', this.font);
+  this.render.setAttribute(this.el.nativeElement, 'font', 'new_value');
+  console.log('After change:', this.font); // Still the original
+}
+```
+
+---
+
+## 🧩 Final Thoughts
+
+The `@Attribute()` decorator is a subtle but effective tool when you need to:
+
+* Access static, unchanging values at creation time.
+* Avoid Angular’s reactivity or binding overhead for certain config values.
+* Build lightweight, configuration-based directives.
+
+It won’t replace `@Input()` in most day-to-day Angular use cases — but when you do need it, it’s a clean and powerful solution.
+
+---
+
+💬 Have you ever used `@Attribute()` in a project? What other lesser-known Angular decorators have helped you write cleaner or more efficient code?
+
+Drop your thoughts in the comments — and happy coding! 🚀
+
+---
+
+Would you like this exported as a `.md` file for publishing or hosting?
