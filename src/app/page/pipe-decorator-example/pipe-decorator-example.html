@@ -1,0 +1,34 @@
+<h3>Pipe Decorator</h3>
+
+<!-- <div class="text-wrapper"> -->
+  <!-- <div class="text">
+    <textarea
+      class="textarea-modern"
+      [(ngModel)]="phoneNumber"
+      name="subject" 
+      maxlength="10"
+      id="subject"
+    ></textarea>
+    <div class="btn-container"> 
+      <button class="btn-ghost"  (click)="addNumber()" type="button">
+        add
+      </button>
+    </div>
+  </div> -->
+  <!-- <div class="example"> -->
+    <div class="table-header">
+      <div class="index">Index</div>
+      <div class="country">Country Name</div>
+      <div class="phoneNumber">Phone Number</div>
+      <div class="formattedValue">Formatted Value</div> 
+    </div>
+    @for (item of numberArray(); track $index) {  
+    <div class="table-body">
+      <div class="index">{{$index}}</div>
+      <div class="country">{{item.country}}</div>
+      <div class="phoneNumber">{{item.phoneNumber}}</div>
+      <div class="formattedValue">{{ item.phoneNumber| phoneFormat : item.country }}</div> 
+    </div>
+    }
+  <!-- </div> -->
+<!-- </div> -->

@@ -1,44 +1,58 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnInit } from '@angular/core';
 import {
+  AbstractControl,
+  AsyncValidatorFn,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Formfield } from '../../directive/formfield';
+import { delay, map, of, timer } from 'rxjs';
+import { Logger, LoggerToken } from '../../token/custom-injection-token';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, Formfield],
   templateUrl: './login.html',
   styleUrl: './login.scss',
+  providers : [
+  ]
 })
 export class Login implements OnInit {
   private formBuilder: FormBuilder = inject(FormBuilder);
 
   result: string = 'start';
 
+  constructor(@Inject(LoggerToken) private logger: Logger) {
+    this.logger.log('Login component initialized');
+  }
+
   formGroup: FormGroup = this.formBuilder.nonNullable.group({
-    username: ['', [Validators.required]],
+    username: ['', [Validators.required],[this.userExistsValidator()]],
     password: ['', [Validators.required]],
   });
 
-  constructor() {
-    this.someMethod()
-  }
 
-  async someMethod(){
-    this.result = 'Loading';
-    console.time(this.result)
-    await new Promise((resolve,reject) => {
-       setTimeout(() => {
-           this.result = 'Done';
-          resolve('dddd') 
-       }, 5000);
-    });  
-    console.timeLog(this.result,this.result)
+  userExistsValidator():AsyncValidatorFn  {
+    return (control: AbstractControl) => {
+        return  of(null).pipe(delay(2000))
+    }
+}
  
+
+  async someMethod() {
+    this.result = 'Loading';
+    console.time(this.result);
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        this.result = 'Done';
+        resolve('dddd');
+      }, 5000);
+    });
+    console.timeLog(this.result, this.result);
   }
 
   ngOnInit() {
@@ -66,6 +80,7 @@ export class Login implements OnInit {
     this.formGroup.get('username')?.events.subscribe({
       next: (e) => {
         console.log('password control', e);
+        this.logger.log(e.source.value as string)
       },
       error: (err) => {
         console.error(err);
@@ -106,4 +121,13 @@ export class Login implements OnInit {
     console.log('Button : ', e);
     return false;
   }
+
+   submit() {
+    const payload = {
+      password : this.formGroup.get('password')?.value,
+      username : this.formGroup.get('username')?.value
+    }
+
+    console.log(payload);
+   }
 }

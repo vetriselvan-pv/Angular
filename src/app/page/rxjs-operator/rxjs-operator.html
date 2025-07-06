@@ -1,0 +1,159 @@
+<!-- <h3>Subject</h3>
+
+<div class="text-wrapper">
+  <div class="text">
+    <textarea
+      class="textarea-modern"
+      [(ngModel)]="subjectText"
+      name="subject"
+      id="subject"
+    ></textarea>
+    <div class="btn-container">
+      <button class="btn-ghost" (click)="sendSubject()" type="button">
+        send
+      </button>
+      <button class="btn-ghost" (click)="addSubject()" type="button">
+        add
+      </button>
+    </div>
+  </div>
+  <div class="example">
+    @for (item of subjectArray(); track $index) { @let data = subject | async ;
+    <div class="card">
+      <div class="index">{{$index}}</div>
+      <div class="data">{{data | json}}</div>
+    </div>
+    }
+  </div>
+</div>
+
+<h3>BehaviorSubject</h3>
+
+<div class="text-wrapper">
+  <div class="text">
+    <textarea
+      class="textarea-modern"
+      [(ngModel)]="behaviorSubjectText"
+      name="behaviorSubject"
+      id="behaviorSubject"
+    ></textarea>
+    <div class="btn-container">
+      <button class="btn-ghost" (click)="sendBehaviorSubject()" type="button">
+        send
+      </button>
+      <button class="btn-ghost" (click)="addBehaviorSubject()" type="button">
+        add
+      </button>
+    </div>
+  </div>
+  <div class="example">
+    @for (item of behaviorSubjectArray(); track $index) { @let data =
+    behaviorSubject | async ;
+    <div class="card">
+      <div class="index">{{$index}}</div>
+      <div class="data">{{data | json}}</div>
+    </div>
+    }
+  </div>
+</div>
+
+<h3>ReplaySubject</h3>
+
+<div class="text-wrapper">
+  <div class="text">
+    <textarea
+      class="textarea-modern"
+      [(ngModel)]="replaySubjectText"
+      name="replaySubject"
+      id="replaySubject"
+    ></textarea>
+    <div class="btn-container">
+      <button class="btn-ghost" (click)="sendReplaySubject()" type="button">
+        send
+      </button>
+      <button class="btn-ghost" (click)="addReplaySubject()" type="button">
+        add
+      </button>
+    </div>
+  </div>
+  <div class="example">
+    @for (item of replaySubjectArray(); track $index) { @let data =
+    replayObservable | async ;
+    <div class="card">
+      <div class="index">{{$index}}</div>
+      @if( data &&data.length > 0 ) { @for( item of data ; track item ; let i =
+      $index ) {
+      <div class="card">
+        <div class="index">{{i}}</div>
+        <div class="data">{{item | json}}</div>
+      </div>
+      } }
+      @else {
+        <div class="data">
+          {{data | json}}
+        </div>
+      }
+    </div>
+    }
+  </div>
+</div> -->
+
+<!-- <h3>AsyncSubject</h3>
+
+<div class="text-wrapper">
+  <div class="text">
+    <textarea
+      class="textarea-modern"
+      [(ngModel)]="asyncSubjectText"
+      name="asyncSubject"
+      id="asyncSubject"
+    ></textarea>
+    <div class="btn-container">
+      <button class="btn-ghost" (click)="sendAsyncSubject()" type="button">
+        send
+      </button>
+      <button class="btn-ghost" (click)="completeAsyncSubject()" type="button">
+        Complete
+      </button>
+      <button class="btn-ghost" (click)="addAsyncSubject()" type="button">
+        add
+      </button>
+    </div>
+  </div>
+  <div class="example">
+    <p>User Input : </p>
+    @for (data of asyncSubjectData(); track $index) {  
+      <div class="card">
+        <div class="index">{{$index}}</div>
+        <div class="data">{{data | json}}</div>
+      </div>
+      }
+    <p>Async Subject Value : </p>
+    @for (item of asyncSubjectArray(); track $index) { @let data = asyncSubject
+    | async ;
+    <div class="card">
+      <div class="index">{{$index}}</div>
+      <div class="data">{{data | json}}</div>
+    </div>
+    }
+  </div>
+</div> -->
+
+<h3>Void Subject</h3>
+
+<div class="text-wrapper">
+  <div class="text">
+    <button class="btn-ghost" (click)="sendVoidSubject()" type="button">
+      send
+    </button>
+  </div>
+  <div class="example">
+    <p>Void Subject Value :</p> 
+    @for (item of voidObservable | async; track $index) {
+      <div class="card">
+        <div class="index">{{$index}}</div>
+        <div class="data">{{ 'void subject emitted : ' + ' ' +  item | json }}</div>
+      </div>
+    } 
+  </div>
+</div>
